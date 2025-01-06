@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Template Generator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Email Template Generator</h1>
+
+    <div class="container">
+
+      <div id="input">
+      <form id="emailForm">
+        <label for="category">Category:</label>
+        <select id="category" required>
+          <option value="professional">Professional</option>
+          <option value="personal">Personal</option>
+          <option value="marketing">Marketing</option>
+          <option value="customer-support">Customer Support</option>
+          <option value="sales">Sales</option>
+          <option value="job-applications">Job Applications</option>
+          <option value="promotions">Promotions</option>
+          <option value="events">Event Invitations</option>
+          <option value="newsletters">Newsletters</option>
+          <option value="product-updates">Product Updates</option>
+        </select>
+
+        <label for="tone">Tone:</label>
+        <select id="tone" required>
+          <option value="formal">Formal</option>
+          <option value="casual">Casual</option>
+          <option value="neutral">Neutral</option>
+        </select>
+
+        <label for="recipient">Recipient's Name:</label>
+        <input
+          type="text" id="recipient" 
+          placeholder="Enter recipient's name" required
+        />
+
+        <label for="sender">Sender's Name:</label>
+        <input
+          type="text" id="sender" 
+          placeholder="Enter sender's name" required
+        />
+
+        <label for="subject">Subject:</label>
+        <input
+          type="text" id="subject" 
+          placeholder="Enter email subject" required
+        />
+
+        <label for="purpose">Purpose:</label>
+        <textarea
+          id="purpose"
+          placeholder="Describe the purpose of the email" required
+        ></textarea>
+
+        <button type="button" id="generateBtn">Generate Template</button>
+      </form>
+
+    </div>
+
+    
+      <div id="output">
+        <h2>Generated Email</h2>
+        <textarea id="emailOutput" readonly></textarea>
+        <button id="copyBtn">Copy to Clipboard</button>
+        <button id="downloadBtn">Download</button>
+      </div>
+    
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
