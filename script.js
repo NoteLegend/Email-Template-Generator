@@ -5,8 +5,8 @@ async function validateInputs() {
   const purpose = document.getElementById("purpose").value.trim();
 
   const nameRegex = /^[a-zA-Z\s]+$/; // Only letters and spaces
-  const subjectRegex = /^.{5,100}$/; // Subject: 5-100 characters
-  const purposeRegex = /^.{10,500}$/; // Purpose: 10-500 characters
+  const subjectRegex = /^.{5,50}$/; // Between 5 and 50 characters
+  const purposeRegex = /^.{5,50}$/; // Between 5 and 50 characters
 
   if (!nameRegex.test(recipient)) {
     alert("Recipient's name can only contain letters and spaces.");
@@ -19,12 +19,12 @@ async function validateInputs() {
   }
 
   if (!subjectRegex.test(subject)) {
-    alert("Subject must be between 5 and 100 characters.");
+    alert("Subject must be between 5 and 50 characters.");
     return false;
   }
 
   if (!purposeRegex.test(purpose)) {
-    alert("Purpose must be between 10 and 500 characters.");
+    alert("Purpose must be between 5 and 50 characters.");
     return false;
   }
 
@@ -33,42 +33,45 @@ async function validateInputs() {
 
 async function generateEmail(category, tone, recipient, sender, subject, purpose) {
   const prompt = `
-    Generate an email based on the following details:
-    Category: ${category}
-    Tone: ${tone}
-    Recipient's Name: ${recipient}
-    Sender's Name: ${sender}
-    Subject: ${subject}
-    Purpose: ${purpose}
+Generate an email based on the following details:
+- Category: ${category}
+- Tone: ${tone}
+- Recipient's Name: ${recipient}
+- Sender's Name: ${sender}
+- Subject: ${subject}
+- Purpose: ${purpose}
 
-    The email should include:
-    - A greeting.
-    - Body content addressing the purpose.
-    - A closing and signature from the sender.
-  `;
+The email should include:
+- A proper greeting.
+- Body content addressing the purpose.
+- A closing and signature from the sender.
+`;
 
   try {
-    const response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer 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`, // Replace with your Hugging Face API key
+        "Authorization": `Bearer  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`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs: prompt }),
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 500,
+        temperature: 0.7,
+      }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error("API Error Response:", errorData);
-      throw new Error(`API Error: ${errorData.error || response.statusText}`);
+      throw new Error(data.error.message || "Failed to generate email.");
     }
 
-    const data = await response.json();
-    console.log("API Response:", data);
-    return data[0].generated_text.trim(); // Adjust based on model output format
+    return data.choices[0].message.content.trim();
   } catch (error) {
-    console.error("Error generating email:", error);
-    alert(`Failed to generate email: ${error.message}`);
+    console.error("Error:", error);
+    alert(`Error generating email: ${error.message}`);
     return "";
   }
 }
@@ -77,7 +80,7 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
   const category = document.getElementById("category").value;
   const tone = document.getElementById("tone").value;
 
-  if (!await validateInputs()) return;
+  if (!(await validateInputs())) return;
 
   const recipient = document.getElementById("recipient").value.trim();
   const sender = document.getElementById("sender").value.trim();
@@ -91,7 +94,7 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
 document.getElementById("copyBtn").addEventListener("click", () => {
   const emailContent = document.getElementById("emailOutput");
   emailContent.select();
-  emailContent.setSelectionRange(0, 99999);
+  emailContent.setSelectionRange(0, 99999); // For mobile compatibility
   navigator.clipboard.writeText(emailContent.value);
   alert("Email copied to clipboard!");
 });
